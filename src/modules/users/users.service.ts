@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import {User} from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseService } from '@/utils';
+import { ResponseService, hashPassword } from '@/utils';
 
 
 @Injectable()
@@ -29,13 +29,14 @@ export class UsersService {
           
         })
       }
-      const hashedPassword = await this.hashPassword(password);
+      const hashedPassword = await hashPassword(password);
       const user = this.userRepository.create({
         email,
         name,
         password: hashedPassword,
         role,
       })
+      console.log(user);
       await this.userRepository.save(user);
 
       return this.responseService.Response({
@@ -69,6 +70,7 @@ export class UsersService {
   async findAll() {
     try{
       const users = await this.userRepository.find();
+      console.log(users);
       return this.responseService.Response({
         message: 'Users fetched successfully',
         data: users,
@@ -76,6 +78,7 @@ export class UsersService {
       })
     }
     catch(error){
+      console.log((error as Error).message);
       const errorMessage = (error as Error).message;
       this.responseService.Response({
         message: errorMessage,

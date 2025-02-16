@@ -22,7 +22,10 @@ import { Logger } from '@/utils'
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('DB_SYNCHRONIZE'),
+        synchronize:true,
+        ssl: false,
+        autoLoadEntities: true,
+        logging: false,
       }),
       inject: [ConfigService]
 
@@ -31,12 +34,12 @@ import { Logger } from '@/utils'
 })
 export class DbModule {
   constructor(private readonly configService: ConfigService) {
-    Logger.logger.log(this.configService.get('DB_HOST'))
     this.connectDatabase();
   }
 
   private async connectDatabase() {
-    const databaseName = this.configService.get('DB_DATABASE');
+    const databaseName = this.configService.get('DB_NAME');
+   
     const connection = TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -47,13 +50,15 @@ export class DbModule {
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: configService.get('DB_SYNCHRONIZE'),
+        synchronize:true,
+        ssl: false,
+        autoLoadEntities: true,
+        logging: false,
       }),
       inject: [ConfigService],
     });
-
     try {
-      await connection;
+      connection
       Logger.logger.log(`Database is connected successfully 🌏🔥`);
     } catch (error) {
       const message = (error as Error).message;

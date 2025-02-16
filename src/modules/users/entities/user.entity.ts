@@ -1,28 +1,28 @@
 import {
-    Entity,
-    Column,
-    PrimaryColumn,
-    Unique,
-    CreateDateColumn,
-    DeleteDateColumn,
-    UpdateDateColumn,
-  } from 'typeorm';
-  import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
-  import { Exclude, Type } from 'class-transformer';
-  import {RolesEnum as Roles} from '@/enums';
-  import { uuid } from '@/utils';
+  Entity,
+  Column,
+  PrimaryColumn,
+  Unique,
+  CreateDateColumn,
+  DeleteDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { Exclude, Type } from 'class-transformer';
+import { RolesEnum as Roles } from '@/enums';
+import { uuid } from '@/utils';
 
-    @Entity('users')
+@Entity('users')
 export class User {
-    constructor(partial: Partial<User>) {
-        this.id = uuid();
-        Object.assign(this, partial);
-    }
+  constructor(partial: Partial<User>) {
+    this.id = uuid();
+    Object.assign(this, partial);
+  }
 
-    @PrimaryColumn()
-    id: string;
+  @PrimaryColumn()
+  id: string;
 
-    @Column()
+  @Column()
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -50,9 +50,6 @@ export class User {
   @Exclude()
   password: string;
 
-  @Column({ nullable: true })
-  @Exclude()
-  refresh_token: string;
 
   @Type(() => Date)
   @CreateDateColumn({ type: 'timestamp', nullable: false })

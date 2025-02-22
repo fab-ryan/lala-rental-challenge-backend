@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import {User} from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseService } from '@/utils';
+import { ResponseService, hashPassword } from '@/utils';
 
 
 @Injectable()
@@ -21,15 +21,16 @@ export class UsersService {
  async create(createUserDto: CreateUserDto) {
     try{
       const {email, name, password, role} = createUserDto;
-      const emailExists = await this.checkEmailExist(email);
+      const emailExists = await this.checkEmailExist(email,false);
       if(emailExists){
-        this.responseService.Response({
+       return this.responseService.Response({
           message: 'Email already exists',
           statusCode: 400,
           
         })
       }
-      const hashedPassword = await this.hashPassword(password);
+      const hashedPassword = await hashPassword(password);
+
       const user = this.userRepository.create({
         email,
         name,
@@ -37,26 +38,27 @@ export class UsersService {
         role,
       })
       await this.userRepository.save(user);
-
+      console.log(user);
       return this.responseService.Response({
         message: 'User created successfully',
         data: user,
         statusCode: 201,
         key:'user'
       })
+      
      
     }catch(error){
       const errorMessage= (error as Error).message;
-      this.responseService.Response({
+    return  this.responseService.Response({
         message: errorMessage,
       })
     }
   }
 
-  async checkEmailExist(email: string): Promise<boolean>{
+  async checkEmailExist(email: string, scope:boolean = true): Promise<boolean>{
     const exists = await this.userRepository.exists({
       where: {email},
-      withDeleted: true,
+      withDeleted: scope,
     })
     return exists;
   }
@@ -77,7 +79,7 @@ export class UsersService {
     }
     catch(error){
       const errorMessage = (error as Error).message;
-      this.responseService.Response({
+     return this.responseService.Response({
         message: errorMessage,
       })
     }
@@ -103,7 +105,7 @@ export class UsersService {
     }
     catch(error){
       const errorMessage = (error as Error).message;
-      this.responseService.Response({
+      return this.responseService.Response({
         message: errorMessage,
       })
     }
@@ -129,7 +131,7 @@ export class UsersService {
     }
     catch(error){
       const errorMessage = (error as Error).message;
-      this.responseService.Response({
+   return   this.responseService.Response({
         message: errorMessage,
       })
     }
@@ -155,7 +157,7 @@ export class UsersService {
     }
     catch(error){
       const errorMessage = (error as Error).message;
-      this.responseService.Response({
+    return  this.responseService.Response({
         message: errorMessage,
       })
     }

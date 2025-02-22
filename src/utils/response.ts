@@ -24,7 +24,7 @@ export class ResponseService {
   public Response(result: IRequest): ResponseDto {
     const { route, method } = this.request;
     const response: ResponseDto = {
-      success: result.success,
+      success: result.statusCode >= 200 && result.statusCode < 300,
       statusCode: result.statusCode,
       [result.key ?? 'data']: result.data,
       path: route.path,

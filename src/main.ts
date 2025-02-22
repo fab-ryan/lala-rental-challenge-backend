@@ -9,6 +9,7 @@ import { Logger} from '@/utils'
 import { swaggerConfig, config as configEnv, }
  from '@/config'
 import { AppModule } from './app.module';
+import { HttpExceptionFilter, QueryFailedFilter } from './common';
 
 
 config();
@@ -34,12 +35,10 @@ async function bootstrap() {
   );
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
-
-  // app.useGlobalFilters(
-  
-  //   new QueryFailedFilter(reflector),
-  //   new HttpExceptionFilter(reflector),
-  // );
+  app.useGlobalFilters(
+    new QueryFailedFilter(reflector),
+    new HttpExceptionFilter(reflector),
+  );
 
   app.setGlobalPrefix(configEnv().prefix);
 

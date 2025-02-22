@@ -61,6 +61,9 @@ describe('UsersService', () => {
         created_at: expect.any(Date),
         updated_at: expect.any(Date),
         deleted_at: null,
+        properties: [] as any,
+        bookings: [] as any,
+
       };
       userRepository.create.mockReturnValue(mockUser);
       userRepository.save.mockResolvedValue(mockUser);
@@ -68,7 +71,7 @@ describe('UsersService', () => {
 
       await service.create(createUserDto);
 
-    
+
       expect(userRepository.save).toHaveBeenCalledWith(mockUser);
       expect(responseService.Response).toHaveBeenCalledWith({
         message: 'User created successfully',
@@ -109,7 +112,10 @@ describe('UsersService', () => {
           created_at: expect.any(Date),
           updated_at: expect.any(Date),
           deleted_at: null,
-          password: undefined
+          password: undefined,
+          properties: [] as any,
+        bookings: [] as any,
+
         }
       ]
       userRepository.find.mockResolvedValue(mockUsers);
@@ -127,14 +133,18 @@ describe('UsersService', () => {
 
   describe('findOne', () => {
     it('should fetch a user by ID successfully', async () => {
-      const mockUser = { id: userId, name: 'Test User', email: 'test@example.com',
-      role: RolesEnum.RENTER,
-      status: true,
-      created_at: expect.any(Date),
-      updated_at: expect.any(Date),
-      deleted_at: null,
-      password: undefined
-       };
+      const mockUser = {
+        id: userId, name: 'Test User', email: 'test@example.com',
+        role: RolesEnum.RENTER,
+        status: true,
+        created_at: expect.any(Date),
+        updated_at: expect.any(Date),
+        deleted_at: null,
+        password: undefined,
+        properties: [] as any,
+        bookings: [] as any,
+
+      };
       userRepository.findOne.mockResolvedValue(mockUser);
 
       await service.findOne(userId);
@@ -165,14 +175,18 @@ describe('UsersService', () => {
   describe('update', () => {
     it('should update a user successfully', async () => {
       const updateUserDto: UpdateUserDto = { name: 'Updated Name' };
-      const mockUser = { id: userId, name: 'Old Name', email: 'test@example.com',
-      role: RolesEnum.RENTER,
-      status: true,
-      created_at: expect.any(Date),
-      updated_at: expect.any(Date),
-      deleted_at: null,
-      password: undefined
-       };
+      const mockUser = {
+        id: userId, name: 'Old Name', email: 'test@example.com',
+        role: RolesEnum.RENTER,
+        status: true,
+        created_at: expect.any(Date),
+        updated_at: expect.any(Date),
+        deleted_at: null,
+        password: undefined,
+        properties: [] as any,
+        bookings: [] as any,
+
+      };
       userRepository.findOne.mockResolvedValue(mockUser);
 
       await service.update(userId, updateUserDto);
@@ -198,13 +212,16 @@ describe('UsersService', () => {
 
   describe('remove', () => {
     it('should delete a user successfully', async () => {
-      const mockUser = { id: userId, name: 'Test User', email: 'test@example.com' ,
-      role: RolesEnum.RENTER,
-      status: true,
-      created_at: expect.any(Date),
-      updated_at: expect.any(Date),
-      deleted_at: null,
-      password: undefined
+      const mockUser = {
+        id: userId, name: 'Test User', email: 'test@example.com',
+        role: RolesEnum.RENTER,
+        status: true,
+        created_at: expect.any(Date),
+        updated_at: expect.any(Date),
+        deleted_at: null,
+        password: undefined,
+        properties: [] as any,
+        bookings: [] as any,
       };
       userRepository.findOne.mockResolvedValue(mockUser);
 

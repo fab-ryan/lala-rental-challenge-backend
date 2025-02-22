@@ -9,6 +9,7 @@ import { hashPassword, ResponseService } from '@/utils';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import e from 'express';
+import { AuthUserType } from '@/guards';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
   async authLogin(createAuthDto: CreateAuthDto) {
     try {
 
-      const userExist = await this.userService.checkEmailExist(createAuthDto.email);
+      const userExist = await this.userService.checkEmailExist(createAuthDto.email, false);
       if (!userExist) {
         return this.responseService.Response({
           message: 'User not found',
@@ -31,8 +32,8 @@ export class AuthService {
         });
       }
       const user = await this.userRepository.findOne({ where: { email: createAuthDto.email } });
+      const passwordMatch = bcrypt.compareSync(createAuthDto.password, user.password);
 
-      const passwordMatch = await bcrypt.compare(createAuthDto.password, user.password);
       if (!passwordMatch) {
         return this.responseService.Response({
           message: 'Incorrect email or password',
@@ -71,12 +72,12 @@ export class AuthService {
       const { user } = req;
       const userExist = await this.userService.checkEmailExist(user.email);
       if (!userExist) {
-        const userRole= Roles.RENTER;
-        const reqUser=  this.userRepository.create({
+        const userRole = Roles.RENTER;
+        const reqUser = this.userRepository.create({
           email: user.email,
           name: user.firstName + ' ' + user.lastName,
           role: userRole,
-          password:await hashPassword('password'),
+          password: await hashPassword('password'),
           status: true,
         })
         await this.userRepository.save(reqUser);
@@ -89,6 +90,24 @@ export class AuthService {
         statusCode: 200,
         data: { token },
         key: 'access_token'
+      })
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      return this.responseService.Response({
+        message: errorMessage,
+        statusCode: 500,
+      });
+    }
+  }
+
+  async userDetails(user: AuthUserType) {
+    try {
+      const userDetail = await this.userRepository.findOne({ where: { id: user.id } });
+      return this.responseService.Response({
+        message: 'User details',
+        statusCode: 200,
+        data: userDetail,
+        key:'profile'
       })
     } catch (error) {
       const errorMessage = (error as Error).message;

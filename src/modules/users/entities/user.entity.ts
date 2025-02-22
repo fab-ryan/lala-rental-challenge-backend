@@ -6,11 +6,15 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Exclude, Type } from 'class-transformer';
 import { RolesEnum as Roles } from '@/enums';
 import { uuid } from '@/utils';
+import { Property } from '@/modules/property/entities/property.entity';
+import { Booking } from '@/modules/booking/entities/booking.entity';
 
 @Entity('users')
 export class User {
@@ -50,6 +54,13 @@ export class User {
   @Exclude()
   password: string;
 
+  @Exclude()
+  @Type(() => Property)
+  @OneToMany(() => Property, (property) => property.host, { eager: true })
+  properties: Property;
+
+  @ManyToOne(() => Booking, (property) => property.user)
+  bookings: Booking;
 
   @Type(() => Date)
   @CreateDateColumn({ type: 'timestamp', nullable: false })
@@ -60,6 +71,8 @@ export class User {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date;
+
+  
 }
 
 

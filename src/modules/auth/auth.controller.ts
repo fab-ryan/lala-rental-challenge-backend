@@ -2,6 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } fro
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Roles, User } from '@/common';
+import { AuthUserType } from '@/guards';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { RolesEnum } from '@/enums';
+import { AuthGuard as AuthGuardUser } from '@/guards';
 
 @Controller('auth')
 export class AuthController {
@@ -22,5 +27,13 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   googleCallback(@Req() req) {
     return this.authService.googleCallback(req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuardUser)
+  @Roles(RolesEnum.HOST, RolesEnum.RENTER)
+  @Get('/profile')
+  getProfile(@User() req: AuthUserType) {
+    return this.authService.userDetails(req);
   }
 }
